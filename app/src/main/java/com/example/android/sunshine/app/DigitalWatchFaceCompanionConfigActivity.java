@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.sunshine.app.wear;
+package com.example.android.sunshine.app;
 
 import android.app.Activity;
 import android.app.AlertDialog;
