@@ -18,7 +18,7 @@ public class Utilities {
 
         String computedID = getArtUrlForWeatherCondition(context,weatherId);
 
-        int resID = context.getResources().getIdentifier(computedID , "drawable", context.getPackageName());
+        int resID = context.getResources().getIdentifier(computedID , context.getString(R.string.drawablefolder), context.getPackageName());
 
         return BitmapFactory.decodeResource(context.getResources(), resID);
     }

@@ -392,44 +392,28 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter implements 
         }
     }
 
-
     private void updateWearables(){
+
         Context context = getContext();
         String locationQuery = Utility.getPreferredLocation(context);
         Uri weatherUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(locationQuery, System.currentTimeMillis());
 
-        // we'll query our contentProvider, as always
         Cursor cursor = context.getContentResolver().query(weatherUri, NOTIFY_WEATHER_PROJECTION, null, null, null);
         if (cursor.moveToFirst()) {
-            int weatherId = cursor.getInt(INDEX_WEATHER_ID);
-            double high = cursor.getDouble(INDEX_MAX_TEMP);
-            double low = cursor.getDouble(INDEX_MIN_TEMP);
 
-            Log.d("TAG","SENDING WEATHER DATA" );
-            // Create a DataMap object and send it to the data layer
             DataMap dataMap = new DataMap();
-            dataMap.putDouble("high", high);
-            dataMap.putDouble("low", low);
-            dataMap.putLong("id", weatherId);
-            //Requires a new thread to avoid blocking the UI
 
-            PutDataMapRequest putDataMapRequest = PutDataMapRequest.create("/wearable_weather");
+            dataMap.putDouble(context.getString(R.string.WEATHER_DATA_HIGH), cursor.getDouble(INDEX_MAX_TEMP));
+            dataMap.putDouble(context.getString(R.string.WEATHER_DATA_LOW), cursor.getDouble(INDEX_MIN_TEMP));
+
+            dataMap.putLong(context.getString(R.string.WEATHER_DATA_ID), cursor.getInt(INDEX_WEATHER_ID));
+
+            PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(context.getString(R.string.WEATHER_PATH));
             putDataMapRequest.getDataMap().putAll(dataMap);
             PutDataRequest putDataRequest = putDataMapRequest.asPutDataRequest();
             putDataRequest.setUrgent();
-            Wearable.DataApi.putDataItem(mGoogleApiClient,putDataRequest)
-                    .setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
-                        @Override
-                        public void onResult(DataApi.DataItemResult dataItemResult) {
-                            if (!dataItemResult.getStatus().isSuccess()) {
-                                // Failed
-                                Log.e(LOG_TAG, "Failed to synchronize data with wearable");
-                            } else {
-                                // Success
-                                Log.e(LOG_TAG, "Data synchronized with wearable correctly");
-                            }
-                        }
-                    });
+
+            Wearable.DataApi.putDataItem(mGoogleApiClient,putDataRequest);
         }
     }
 

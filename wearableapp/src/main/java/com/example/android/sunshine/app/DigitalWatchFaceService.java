@@ -311,7 +311,6 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
                 mBitmapOffsetY = mYOffset + 20;
             }
 
-
             float textSize = resources.getDimension(isRound
                     ? R.dimen.digital_text_size_round : R.dimen.digital_text_size);
             float amPmSize = resources.getDimension(isRound
@@ -596,7 +595,7 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             }
         }
 
-        @Override // DataApi.DataListener
+        @Override
         public void onDataChanged(DataEventBuffer dataEvents) {
             for (DataEvent dataEvent : dataEvents) {
                 if (dataEvent.getType() != DataEvent.TYPE_CHANGED) {
@@ -606,28 +605,23 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
                 DataItem dataItem = dataEvent.getDataItem();
 
                 if (dataItem.getUri().getPath().equals(DigitalWatchFaceUtil.PATH_WITH_FEATURE)){
+
                     DataMapItem dataMapItem = DataMapItem.fromDataItem(dataItem);
                     DataMap config = dataMapItem.getDataMap();
-                    if (Log.isLoggable(TAG, Log.DEBUG)) {
-                        Log.d(TAG, "Config DataItem updated:" + config);
-                    }
                     updateUiForConfigDataMap(config);
-                }else if(dataItem.getUri().getPath().equals("/wearable_weather")){
+
+                }else if(dataItem.getUri().getPath().equals(getString(R.string.WEATHER_PATH))){
 
                     DataMapItem dataMapItem = DataMapItem.fromDataItem(dataItem);
                     DataMap dMap = dataMapItem.getDataMap();
-                    int high = (int) Math.round(dMap.getDouble("high"));
-                    int low = (int) Math.round(dMap.getDouble("low"));
-                    Long id = dMap.getLong("id");
+                    int high = (int) Math.round(dMap.getDouble(getString(R.string.WEATHER_DATA_HIGH)));
+                    int low = (int) Math.round(dMap.getDouble(getString(R.string.WEATHER_DATA_LOW)));
+                    Long id = dMap.getLong(getString(R.string.WEATHER_DATA_ID));
                     mWeatherBitmap = Utilities.getArtBitmapForCondition(getApplicationContext(),id);
 
                     mHighLow = high+"/"+low+" °C";
 
                     invalidate();
-
-                    Log.d(TAG, "Weather DataItem updated:");
-                }else{
-                    continue;
                 }
             }
         }

@@ -256,4 +256,8 @@
     <string name="digital_config_minutes">Minutes</string>
     <string name="digital_config_seconds">Seconds</string>
 
+    <string name="WEATHER_PATH">/wearable_weather</string>
+    <string name="WEATHER_DATA_HIGH">high</string>
+    <string name="WEATHER_DATA_LOW">low</string>
+    <string name="WEATHER_DATA_ID">id</string>
 </resources>
