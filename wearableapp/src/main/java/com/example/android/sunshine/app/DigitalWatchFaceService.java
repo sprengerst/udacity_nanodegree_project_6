@@ -82,6 +82,8 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
     private static final long MUTE_UPDATE_RATE_MS = TimeUnit.MINUTES.toMillis(1);
     private Bitmap mWeatherBitmap;
     private String mHighLow;
+    private float mBitmapOffsetX;
+    private float mBitmapOffsetY;
 
     @Override
     public Engine onCreateEngine() {
@@ -300,6 +302,16 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             boolean isRound = insets.isRound();
             mXOffset = resources.getDimension(isRound
                     ? R.dimen.digital_x_offset_round : R.dimen.digital_x_offset);
+
+            if(isRound) {
+                mBitmapOffsetX = mXOffset * 4;
+                mBitmapOffsetY = mYOffset + mLineHeight;
+            }else{
+                mBitmapOffsetX = mXOffset * 6;
+                mBitmapOffsetY = mYOffset + 20;
+            }
+
+
             float textSize = resources.getDimension(isRound
                     ? R.dimen.digital_text_size_round : R.dimen.digital_text_size);
             float amPmSize = resources.getDimension(isRound
@@ -524,7 +536,7 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
 
                 canvas.drawBitmap(
                         mWeatherBitmap==null?Utilities.getArtBitmapForCondition(getApplicationContext(),800):mWeatherBitmap,
-                        mXOffset*4, mYOffset + mLineHeight, mDatePaint);
+                        mBitmapOffsetX, mBitmapOffsetY, mDatePaint);
 
             }
         }
