@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.wearable.watchface;
+package com.example.android.sunshine.app;
 
 import android.os.Bundle;
 import android.util.Log;

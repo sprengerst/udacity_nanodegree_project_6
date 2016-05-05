@@ -33,9 +33,9 @@ android {
     buildToolsVersion "24.0.0 rc3"
 
     defaultConfig {
+        applicationId "com.example.android.sunshine.app"
         versionCode 1
         versionName "1.0"
-
         targetSdkVersion 23
     }
 

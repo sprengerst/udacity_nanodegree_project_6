@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.wearable.watchface;
+package com.example.android.sunshine.app;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -36,6 +36,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
 
+import com.example.android.sunshine.app.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataApi;
@@ -577,6 +578,7 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
                 DataItem dataItem = dataEvent.getDataItem();
                 if (!dataItem.getUri().getPath().equals(
                         DigitalWatchFaceUtil.PATH_WITH_FEATURE)) {
+                    Log.d(TAG, "Different Package Received:" + dataItem.getUri().getPath());
                     continue;
                 }
 
