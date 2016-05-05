@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -79,6 +80,8 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
      * Update rate in milliseconds for mute mode. We update every minute, like in ambient mode.
      */
     private static final long MUTE_UPDATE_RATE_MS = TimeUnit.MINUTES.toMillis(1);
+    private Bitmap mWeatherBitmap;
+    private String mHighLow;
 
     @Override
     public Engine onCreateEngine() {
@@ -499,6 +502,9 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
                         mCalendar.get(Calendar.AM_PM)), x, mYOffset, mAmPmPaint);
             }
 
+
+
+
             // Only render the day of week and date if there is no peek card, so they do not bleed
             // into each other in ambient mode.
             if (getPeekCardPosition().isEmpty()) {
@@ -510,6 +516,16 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
                 canvas.drawText(
                         mDateFormat.format(mDate),
                         mXOffset, mYOffset + mLineHeight * 2, mDatePaint);
+
+                // Weather
+                canvas.drawText(
+                        mHighLow==null?"0/0 °C": mHighLow,
+                        mXOffset, mYOffset + mLineHeight * 3, mDatePaint);
+
+                canvas.drawBitmap(
+                        mWeatherBitmap==null?Utilities.getArtBitmapForCondition(getApplicationContext(),800):mWeatherBitmap,
+                        mXOffset*4, mYOffset + mLineHeight, mDatePaint);
+
             }
         }
 
@@ -576,18 +592,31 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
                 }
 
                 DataItem dataItem = dataEvent.getDataItem();
-                if (!dataItem.getUri().getPath().equals(
-                        DigitalWatchFaceUtil.PATH_WITH_FEATURE)) {
-                    Log.d(TAG, "Different Package Received:" + dataItem.getUri().getPath());
+
+                if (dataItem.getUri().getPath().equals(DigitalWatchFaceUtil.PATH_WITH_FEATURE)){
+                    DataMapItem dataMapItem = DataMapItem.fromDataItem(dataItem);
+                    DataMap config = dataMapItem.getDataMap();
+                    if (Log.isLoggable(TAG, Log.DEBUG)) {
+                        Log.d(TAG, "Config DataItem updated:" + config);
+                    }
+                    updateUiForConfigDataMap(config);
+                }else if(dataItem.getUri().getPath().equals("/wearable_weather")){
+
+                    DataMapItem dataMapItem = DataMapItem.fromDataItem(dataItem);
+                    DataMap dMap = dataMapItem.getDataMap();
+                    int high = (int) Math.round(dMap.getDouble("high"));
+                    int low = (int) Math.round(dMap.getDouble("low"));
+                    Long id = dMap.getLong("id");
+                    mWeatherBitmap = Utilities.getArtBitmapForCondition(getApplicationContext(),id);
+
+                    mHighLow = high+"/"+low+" °C";
+
+                    invalidate();
+
+                    Log.d(TAG, "Weather DataItem updated:");
+                }else{
                     continue;
                 }
-
-                DataMapItem dataMapItem = DataMapItem.fromDataItem(dataItem);
-                DataMap config = dataMapItem.getDataMap();
-                if (Log.isLoggable(TAG, Log.DEBUG)) {
-                    Log.d(TAG, "Config DataItem updated:" + config);
-                }
-                updateUiForConfigDataMap(config);
             }
         }
 
